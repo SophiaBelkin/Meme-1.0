@@ -17,10 +17,10 @@ class MemeEditorViewController: UIViewController {
     @IBOutlet weak var shareButton: UIBarButtonItem!
     
     let memeTextAttributes: [NSAttributedString.Key: Any] = [
-        NSAttributedString.Key.strokeColor: UIColor.black,
-        NSAttributedString.Key.foregroundColor: UIColor.white,
-        NSAttributedString.Key.font: UIFont(name: "HelveticaNeue-CondensedBlack", size: 40)!,
-        NSAttributedString.Key.strokeWidth: -3.0
+        .strokeColor: UIColor.black,
+        .foregroundColor: UIColor.white,
+        .font: UIFont(name: "HelveticaNeue-CondensedBlack", size: 40)!,
+        .strokeWidth: -3.0
     ]
     
     
@@ -28,7 +28,6 @@ class MemeEditorViewController: UIViewController {
         super.viewDidLoad()
         cameraButton.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
         shareButton.isEnabled = false
-        
         topTextField.delegate = self
         bottomTextField.delegate = self
         
@@ -39,12 +38,8 @@ class MemeEditorViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // Set TextField default state
-        topTextField.defaultTextAttributes = memeTextAttributes
-        bottomTextField.defaultTextAttributes = memeTextAttributes
-        topTextField.textAlignment = .center
-        bottomTextField.textAlignment = .center
-    
-        
+        setupTextField(topTextField, text: "TOP")
+        setupTextField(bottomTextField, text: "BOTTOM")
         subscribeToNotifications()
     }
     
@@ -53,6 +48,10 @@ class MemeEditorViewController: UIViewController {
         unSubscribeToNotifications()
     }
 
+    private func setupTextField(_ textField: UITextField, text: String) {
+        textField.defaultTextAttributes = memeTextAttributes
+        textField.textAlignment = .center
+    }
     
     private func subscribeToNotifications() {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
@@ -65,19 +64,12 @@ class MemeEditorViewController: UIViewController {
     }
     
     @IBAction func pickAnImageFromCamera(_ sender: UIBarButtonItem) {
-        let imagePicker = UIImagePickerController()
-            imagePicker.delegate = self
-            imagePicker.sourceType = .camera
-            present(imagePicker, animated: true, completion: nil)
-        
+        presentPickerViewController(source: .camera)
     }
     
     
     @IBAction func pickAnImageFromAlbum(_ sender: UIBarButtonItem) {
-        let imagePicker = UIImagePickerController()
-            imagePicker.delegate = self
-            imagePicker.sourceType = .photoLibrary
-            present(imagePicker, animated: true, completion: nil)
+        presentPickerViewController(source: .photoLibrary)
     }
     
     
@@ -105,6 +97,14 @@ class MemeEditorViewController: UIViewController {
                 print("cancel")
             }
         }
+    }
+    
+    
+    func presentPickerViewController(source: UIImagePickerController.SourceType) {
+        let imagePicker = UIImagePickerController()
+            imagePicker.delegate = self
+            imagePicker.sourceType = source
+            present(imagePicker, animated: true, completion: nil)
     }
     
     func save(_ memedImage : UIImage) {
