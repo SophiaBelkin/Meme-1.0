@@ -85,6 +85,7 @@ class MemeEditorViewController: UIViewController {
         guideLabel.isHidden = false
         topTextField.text = "TOP"
         bottomTextField.text = "BOTTOM"
+        imagePickerView.image = nil
     }
     
     
